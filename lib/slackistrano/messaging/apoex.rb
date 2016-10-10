@@ -26,6 +26,10 @@ module Slackistrano
         super
       end
 
+      def deployer
+        `git config user.name`.strip || super
+      end
+
     end
   end
 end
