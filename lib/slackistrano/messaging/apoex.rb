@@ -11,7 +11,34 @@ module Slackistrano
       end
 
       def payload_for_updated
-        super
+        {
+          attachments: [{
+            color: 'good',
+            title: "#{name} deployed :rocket:",
+            fields: [{
+              title: 'Environment',
+              value: stage,
+              short: true
+            }, {
+              title: 'Branch',
+              value: branch,
+              short: true
+            }, {
+              title: 'Deployer',
+              value: deployer,
+              short: true
+            }, {
+              title: 'Time',
+              value: elapsed_time,
+              short: true
+            }, {
+              title: 'Stories',
+              value: stories_summary,
+              short: false
+            }],
+            fallback: super[:text]
+          }]
+        }
       end
 
       def payload_for_reverted
