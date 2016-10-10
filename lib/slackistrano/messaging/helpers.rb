@@ -15,7 +15,7 @@ module Slackistrano
       end
 
       def deployer
-        ENV['USER'] || ENV['USERNAME']
+        `git config user.name`.strip || ENV['USER'] || ENV['USERNAME']
       end
 
       def branch
