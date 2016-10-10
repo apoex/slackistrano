@@ -31,6 +31,10 @@ module Slackistrano
               title: 'Time',
               value: elapsed_time,
               short: true
+            }, {
+              title: 'Stories',
+              value: stories,
+              short: false
             }],
             fallback: super[:text]
           }]
@@ -53,6 +57,23 @@ module Slackistrano
         `git config user.name`.strip || super
       end
 
+      def stories
+        commits = `git log --pretty=oneline #{previous_revision}..#{current_revision}`.split("\n")
+        commits.select!{ |c| c[/\[\#\d{1,10}\]/] }
+        commits.map do |commit|
+          sha, tp, name = commit.match(/(.*)(\[#\d+\])(.*)/).captures.map(&:strip)
+
+          "#{tp} - #{name}"
+        end.join("\n")
+      end
+
+      def current_revision
+        fetch(:current_revision)
+      end
+
+      def previous_revision
+        fetch(:previous_revision)
+      end
     end
   end
 end
