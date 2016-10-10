@@ -31,10 +31,6 @@ module Slackistrano
               title: 'Time',
               value: elapsed_time,
               short: true
-            }, {
-              title: 'Stories',
-              value: stories_summary,
-              short: false
             }],
             fallback: super[:text]
           }]
