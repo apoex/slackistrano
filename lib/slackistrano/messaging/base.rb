@@ -69,5 +69,6 @@ module Slackistrano
   end
 end
 
+require_relative 'apoex'
 require_relative 'default'
 require_relative 'deprecated'
