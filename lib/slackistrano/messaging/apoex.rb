@@ -61,9 +61,10 @@ module Slackistrano
         commits = `git log --pretty=format:%s%n%b #{previous_revision}..#{current_revision}`.split("\n")
         commits.select!{ |c| c[/\[(#\d+)(?:[\s,]*(#\d+))*\]/] }
         commits.map do |commit|
-          tp, name = commit.match(/\[([#\d,\s]*)\]\s*(.+)/).captures
-
-          "#{tp} - #{name}, <a href='https://apoexab.tpondemand.com/entity/#{tp.gsub('#','')}'>TP</a>"
+          tps, name = commit.match(/\[([#\d,\s]*)\]\s*(.+)/).captures
+          tps.split(',').map do |tp|
+            "#{tp} - #{name}, <a href='https://apoexab.tpondemand.com/entity/#{tp.gsub('#','')}'>TP</a>"
+          end
         end.join("\n")
       end
 
