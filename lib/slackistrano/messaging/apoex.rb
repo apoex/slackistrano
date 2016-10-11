@@ -58,14 +58,36 @@ module Slackistrano
       end
 
       def stories
-        commits = `git log --pretty=format:%s%n%b #{previous_revision}..#{current_revision}`.split("\n")
+        commits = `git log --pretty=format:'%s %b' #{previous_revision}..#{current_revision}`.split("\n")
         commits.select!{ |c| c[/\[(#\d+)(?:[\s,]*(#\d+))*\]/] }
         commits.map do |commit|
-          tps, name = commit.match(/\[([#\d,\s]*)\]\s*(.+)/).captures
+          github_pr_id, tps, name = parse_merge_commit(commit)
+          tps, name, github_pr_id = parse_squash_and_merge_commit(commit) unless github_pr_id.present?
+
           tps.split(',').map do |tp|
-            "<https://apoexab.tpondemand.com/entity/#{tp.gsub('#','')}|#{tp} - #{name}>"
+            "#{target_process_entity_link(tp.gsub('#',''), name)} #{github_pull_request_link(github_pr_id)}"
           end
         end.join("\n")
+      end
+
+      def parse_merge_commit(commit)
+        commit.match(/Merge pull request #(\d+).+\[([#\d,\s]*)\]\s*(.+)/).captures || [nil, [], nil]
+      end
+
+      def parse_squash_and_merge_commit(commit)
+        commit.match(/\[([#\d,\s]*)\]\s*(.+)\(#(\d+)\)/).try(:captures) || [[], nil, nil]
+      end
+
+      def target_process_entity_link(entity_id, name)
+        "<https://apoexab.tpondemand.com/entity/#{entity_id}|#{tp} - #{name}>"
+      end
+
+      def github_pull_request_link(github_pr_id)
+        "<https://github.com/#{github_repo}/pull/#{github_pr_id}|Github :octocat:>" if github_pr_id.present?
+      end
+
+      def github_repo
+        fetch(:repo_url).match(/git@github.com:(.+\/.+).git/).captures.first
       end
 
       def current_revision
