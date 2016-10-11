@@ -62,7 +62,7 @@ module Slackistrano
         commits.select!{ |c| c[/\[(#\d+)(?:[\s,]*(#\d+))*\]/] }
         commits.map do |commit|
           github_pr_id, tps, name = parse_merge_commit(commit)
-          tps, name, github_pr_id = parse_squash_and_merge_commit(commit) unless github_pr_id.present?
+          tps, name, github_pr_id = parse_squash_and_merge_commit(commit) unless github_pr_id
 
           tps.split(',').map do |tp|
             "#{target_process_entity_link(tp.gsub('#',''), name)} #{github_pull_request_link(github_pr_id)}"
