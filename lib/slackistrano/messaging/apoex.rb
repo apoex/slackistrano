@@ -63,7 +63,7 @@ module Slackistrano
         commits.map do |commit|
           tps, name = commit.match(/\[([#\d,\s]*)\]\s*(.+)/).captures
           tps.split(',').map do |tp|
-            "#{tp} - #{name}, <a href='https://apoexab.tpondemand.com/entity/#{tp.gsub('#','')}'>TP</a>"
+            "#{tp} - #{name}, <https://apoexab.tpondemand.com/entity/#{tp.gsub('#','')}'|Link to TP>"
           end
         end.join("\n")
       end
