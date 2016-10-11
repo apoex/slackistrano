@@ -65,7 +65,7 @@ module Slackistrano
           tps, name, github_pr_id = parse_squash_and_merge_commit(commit) unless github_pr_id
 
           tps.split(',').map do |tp|
-            "#{target_process_entity_link(tp.gsub('#',''), name)} #{github_pull_request_link(github_pr_id)}"
+            "#{target_process_entity_link(tp, name)} #{github_pull_request_link(github_pr_id)}"
           end
         end.join("\n")
       end
@@ -87,7 +87,7 @@ module Slackistrano
       end
 
       def target_process_entity_link(entity_id, name)
-        "<https://apoexab.tpondemand.com/entity/#{entity_id}|#{tp} - #{name}>"
+        "<https://apoexab.tpondemand.com/entity/#{entity_id.gsub('#','')}|#{entity_id} - #{name}>"
       end
 
       def github_pull_request_link(github_pr_id)
