@@ -71,11 +71,19 @@ module Slackistrano
       end
 
       def parse_merge_commit(commit)
-        commit.match(/Merge pull request #(\d+).+\[([#\d,\s]*)\]\s*(.+)/).try(:captures) || [nil, [], nil]
+        if res = commit.match(/Merge pull request #(\d+).+\[([#\d,\s]*)\]\s*(.+)/)
+          res.captures
+        else
+          [nil, [], nil]
+        end
       end
 
       def parse_squash_and_merge_commit(commit)
-        commit.match(/\[([#\d,\s]*)\]\s*(.+)\(#(\d+)\)/).try(:captures) || [[], nil, nil]
+        if res = commit.match(/\[([#\d,\s]*)\]\s*(.+)\(#(\d+)\)/)
+          res.captures
+        else
+          [[], nil, nil]
+        end
       end
 
       def target_process_entity_link(entity_id, name)
