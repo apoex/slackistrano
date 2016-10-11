@@ -58,12 +58,12 @@ module Slackistrano
       end
 
       def stories
-        commits = `git log --pretty=oneline #{previous_revision}..#{current_revision}`.split("\n")
-        commits.select!{ |c| c[/\[\#\d{1,10}\]/] }
+        commits = `git log --pretty=format:%s%n%b #{previous_revision}..#{current_revision}`.split("\n")
+        commits.select!{ |c| c[/\[(#\d+)(?:[\s,]*(#\d+))*\]/] }
         commits.map do |commit|
-          sha, tp, name = commit.match(/(.*)(\[#\d+\])(.*)/).captures.map(&:strip)
+          tp, name = commit.match(/\[([#\d,\s]*)\]\s*(.+)/).captures
 
-          "#{tp} - #{name}"
+          "#{tp} - #{name}, <a href='https://apoexab.tpondemand.com/entity/#{tp.gsub('#','')}'>TP</a>"
         end.join("\n")
       end
 
