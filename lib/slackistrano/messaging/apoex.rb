@@ -91,7 +91,7 @@ module Slackistrano
       end
 
       def github_pull_request_link(github_pr_id)
-        "<https://github.com/#{github_repo}/pull/#{github_pr_id}|Github :octocat:>" if github_pr_id.present?
+        "<https://github.com/#{github_repo}/pull/#{github_pr_id}|Github :octocat:>" if github_pr_id
       end
 
       def github_repo
