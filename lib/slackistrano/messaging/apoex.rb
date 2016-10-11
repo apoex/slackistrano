@@ -71,7 +71,7 @@ module Slackistrano
       end
 
       def parse_merge_commit(commit)
-        commit.match(/Merge pull request #(\d+).+\[([#\d,\s]*)\]\s*(.+)/).captures || [nil, [], nil]
+        commit.match(/Merge pull request #(\d+).+\[([#\d,\s]*)\]\s*(.+)/).try(:captures) || [nil, [], nil]
       end
 
       def parse_squash_and_merge_commit(commit)
