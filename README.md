@@ -19,7 +19,7 @@ Send notifications to [Slack](https://slack.com) about [Capistrano](http://www.c
 1. Add this line to your application's Gemfile:
 
    ```ruby
-   gem 'slackistrano'
+   gem 'slackistrano', git: 'git@github.com:apoex/slackistrano.git'
    ```
 
 2. Execute:
@@ -50,6 +50,7 @@ You have two options to notify a channel in Slack when you deploy:
 
    ```ruby
    set :slackistrano, {
+     name: 'Pretty Application Name',
      channel: '#your-channel',
      webhook: 'your-incoming-webhook-url'
    }
@@ -62,6 +63,7 @@ You have two options to notify a channel in Slack when you deploy:
 
    ```ruby
    set :slackistrano, {
+     name: 'Pretty Application Name',
      channel: '#your-channel',
      team: 'your-team-name',
      token: 'your-token'
@@ -180,6 +182,7 @@ To set this up:
 
    ```ruby
    set :slackistrano, {
+     name: 'Pretty Application Name',
      klass: Slackistrano::CustomMessaging,
      channel: '#your-channel',
      webhook: 'your-incoming-webhook-url'
@@ -189,6 +192,22 @@ To set this up:
 4. If you come up with something that you think others would enjoy submit it as
    an issue along with a screenshot of the output from `cap production
    slack:deploy:test` and I'll add it to the Wiki.
+
+### ApoEx Message
+
+1. Add the following configuration in `config/deploy.rb`
+
+   ```ruby
+   set :slackistrano, {
+     name: 'Pretty Application Name',
+     klass: Slackistrano::Messaging::Apoex,
+     channel: '#your-channel',
+     webhook: 'your-incoming-webhook-url'
+   }
+   ```
+The output would look like this:
+![Custom Messaging](https://raw.githubusercontent.com/apoex/slackistrano/apoex/images/apoex_messaging.jpg)
+
 
 ## TODO
 
