@@ -10,9 +10,10 @@ module Slackistrano
       extend Forwardable
       def_delegators :env, :fetch
 
-      attr_reader :team, :token, :webhook
+      attr_reader :name, :team, :token, :webhook
 
-      def initialize(env: nil, team: nil, channel: nil, token: nil, webhook: nil)
+      def initialize(name: nil, env: nil, team: nil, channel: nil, token: nil, webhook: nil)
+        @name = name
         @env = env
         @team = team
         @channel = channel
@@ -69,5 +70,6 @@ module Slackistrano
   end
 end
 
+require_relative 'apoex'
 require_relative 'default'
 require_relative 'deprecated'
