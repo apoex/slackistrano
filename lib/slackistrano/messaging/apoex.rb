@@ -65,7 +65,7 @@ module Slackistrano
           tps, name, github_pr_id = parse_squash_and_merge_commit(commit) unless github_pr_id
 
           tps.split(',').map do |tp|
-            "#{target_process_entity_link(tp, name)} #{github_pull_request_link(github_pr_id)}"
+            "#{target_process_entity_link(tp, name)} (#{github_pull_request_link(github_pr_id)})"
           end
         end.join("\n")
       end
