@@ -32,6 +32,10 @@ module Slackistrano
               value: elapsed_time,
               short: true
             }, {
+              title: 'Pull requests',
+              value: pull_requests,
+              short: false
+            }, {
               title: 'Stories',
               value: stories,
               short: false
@@ -54,13 +58,23 @@ module Slackistrano
       end
 
       def deployer
-        `git config user.name`.strip || super
+        deployer_name_from_git.empty? ? super : deployer_name_from_git
+      end
+
+      def deployer_name_from_git
+        @name ||= %x(git config user.name).strip
+      end
+
+      def pull_requests
+        merge_commits.map do |commit|
+          github_pr_id, type, name = parse_merge_commit(commit)
+
+          "#{name} #{github_pull_request_link(github_pr_id)}"
+        end.join("\n")
       end
 
       def stories
-        commits = `git log --pretty=format:'%s %b' #{previous_revision}..#{current_revision}`.split("\n")
-        commits.select!{ |c| c[/\[(#\d+)(?:[\s,]*(#\d+))*\]/] }
-        commits.map do |commit|
+        story_commits.map do |commit|
           github_pr_id, tps, name = parse_merge_commit(commit)
           tps, name, github_pr_id = parse_squash_and_merge_commit(commit) unless github_pr_id
 
@@ -70,8 +84,20 @@ module Slackistrano
         end.join("\n")
       end
 
+      def story_commits
+        commits.select{ |c| c[/\[(#\d+)(?:[\s,]*(#\d+))*\]/] }
+      end
+
+      def merge_commits
+        commits.select{ |c| c[/^Merge pull request #(\d+).+/] }
+      end
+
+      def commits
+        `git log --pretty=format:'%s %b' #{previous_revision}..#{current_revision}`.split("\n")
+      end
+
       def parse_merge_commit(commit)
-        if res = commit.match(/Merge pull request #(\d+).+\[([#\d,\s]*)\]\s*(.+)/)
+        if res = commit.match(/Merge pull request #(\d+) from \S+ (?:\[(#?\w+)\])*\s?(.+)/)
           res.captures
         else
           [nil, [], nil]
