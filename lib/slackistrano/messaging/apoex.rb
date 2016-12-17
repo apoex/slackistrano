@@ -62,7 +62,7 @@ module Slackistrano
       end
 
       def deployer_name_from_git
-        @name ||= %x(git config user.name).strip
+        @deplyer_name ||= %x(git config user.name).strip
       end
 
       def pull_requests
