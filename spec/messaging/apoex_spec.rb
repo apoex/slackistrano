@@ -65,12 +65,22 @@ describe Slackistrano::Messaging::Apoex do
   end
 
   describe '#stories' do
+    let(:story_commit) { squash_merge_commit }
+
     before do
-      expect(subject).to receive(:story_commits).and_return([squash_merge_commit])
+      expect(subject).to receive(:story_commits).and_return([story_commit])
     end
 
     it 'returns the stories' do
       expect(subject.stories).to eq("<https://apoexab.tpondemand.com/entity/1337|#1337 - The best feature ever > (<https://github.com/apoex/test/pull/12|Github :octocat:>)")
+    end
+
+    context 'when story commit is reverted' do
+      let(:story_commit) { "  Revert \"[#12345] Bad code\"" }
+
+      it 'Ignores the story' do
+        expect(subject.stories).to be_empty
+      end
     end
   end
 end

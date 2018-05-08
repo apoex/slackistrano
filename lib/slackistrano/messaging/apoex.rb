@@ -108,7 +108,7 @@ module Slackistrano
         if res = commit.match(/\[([#\d,\s]*)\]\s*(.+)\(#(\d+)\)/)
           res.captures
         else
-          [[], nil, nil]
+          ['', nil, nil]
         end
       end
 
