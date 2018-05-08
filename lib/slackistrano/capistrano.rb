@@ -16,8 +16,11 @@ module Slackistrano
 
     def initialize(env)
       @env = env
-      opts = fetch(:slackistrano, {}).dup
-      @messaging = if opts.empty?
+      config = fetch(:slackistrano, {})
+      @messaging = case config
+                   when false
+                     Messaging::Null.new
+                   when -> (o) { o.empty? }
                      klass = Messaging::Deprecated.new(
                        env: @env,
                        team: fetch(:slack_team),
@@ -26,8 +29,9 @@ module Slackistrano
                        webhook: fetch(:slack_webhook)
                      )
                    else
+                     opts = config.dup.merge(env: @env)
                      klass = opts.delete(:klass) || Messaging::Default
-                     klass.new(opts.merge(env: @env))
+                     klass.new(opts)
                    end
     end
 
@@ -106,11 +110,7 @@ module Slackistrano
     end
 
     def dry_run?
-      if ::Capistrano::Configuration.respond_to?(:dry_run?)
-        ::Capistrano::Configuration.dry_run?
-      else
-        ::Capistrano::Configuration.env.send(:config)[:sshkit_backend] == SSHKit::Backend::Printer
-      end
+      ::Capistrano::Configuration.env.dry_run?
     end
 
     def post_dry_run(payload)

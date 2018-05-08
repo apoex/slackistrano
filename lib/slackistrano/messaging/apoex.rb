@@ -14,7 +14,7 @@ module Slackistrano
         {
           attachments: [{
             color: 'good',
-            title: "#{name} deployed :rocket:",
+            title: "#{username} deployed :rocket:",
             fields: [{
               title: 'Environment',
               value: stage,

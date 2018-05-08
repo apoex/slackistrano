@@ -1,5 +1,21 @@
 # Slackistrano Change Log
 
+3.8.2
+-----
+
+- Allow overriding icon_url, icon_emoji, and usename without needing custom
+  messaging class [#78, #68]
+
+3.8.1
+-----
+
+- Changes to support capistrano 3.8.1 (hence the massive version bump) [#70, #71]
+
+3.1.1
+-----
+
+- Allow easily disabling Slackistrano by setting :slackistrano to false [#67]
+
 3.1.0
 -----
 
