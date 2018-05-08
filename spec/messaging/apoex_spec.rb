@@ -62,6 +62,21 @@ describe Slackistrano::Messaging::Apoex do
     it 'returns the pull requests' do
       expect(subject.pull_requests).to eq("This is a merge commit <https://github.com/apoex/test/pull/447|Github :octocat:>")
     end
+
+    context 'when parser breaks' do
+      let(:error) { StandardError.new 'boom' }
+
+      before do
+        allow(subject).to receive(:parse_merge_commit).and_raise(error)
+      end
+
+      it 'renders error message' do
+        expect($stdout).to receive(:puts).with(/Slackistrano: Error finding pull requests:/)
+        expect($stdout).to receive(:puts).with(/boom/)
+        expect($stdout).to receive(:puts).with(/apoex_spec.rb:/)
+        expect(subject.pull_requests).to be_empty
+      end
+    end
   end
 
   describe '#stories' do
@@ -88,6 +103,21 @@ describe Slackistrano::Messaging::Apoex do
         it 'Ignores the story' do
           expect(subject.stories).to be_empty
         end
+      end
+    end
+
+    context 'when parser breaks' do
+      let(:error) { StandardError.new 'boom' }
+
+      before do
+        allow(subject).to receive(:parse_merge_commit).and_raise(error)
+      end
+
+      it 'renders error message' do
+        expect($stdout).to receive(:puts).with(/Slackistrano: Error finding stories:/)
+        expect($stdout).to receive(:puts).with(/boom/)
+        expect($stdout).to receive(:puts).with(/apoex_spec.rb:/)
+        expect(subject.stories).to be_empty
       end
     end
   end

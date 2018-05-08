@@ -1,6 +1,7 @@
 module Slackistrano
   module Messaging
     class Apoex < Base
+      include Capistrano::Doctor::OutputHelpers
 
       def payload_for_updating
         super
@@ -71,6 +72,11 @@ module Slackistrano
 
           "#{name} #{github_pull_request_link(github_pr_id)}"
         end.join("\n")
+      rescue StandardError => e
+        warning 'Slackistrano: Error finding pull requests:'
+        warning e.message
+        warning e.backtrace.join("\n")
+        ''
       end
 
       def stories
@@ -84,6 +90,11 @@ module Slackistrano
             "#{target_process_entity_link(tp, name)} (#{github_pull_request_link(github_pr_id)})"
           end
         end.join("\n")
+      rescue StandardError => e
+        warning 'Slackistrano: Error finding stories:'
+        warning e.message
+        warning e.backtrace.join("\n")
+        ''
       end
 
       def story_commits
