@@ -78,6 +78,8 @@ module Slackistrano
           github_pr_id, tps, name = parse_merge_commit(commit)
           tps, name, github_pr_id = parse_squash_and_merge_commit(commit) unless github_pr_id
 
+          next unless tps
+
           tps.split(',').map do |tp|
             "#{target_process_entity_link(tp, name)} (#{github_pull_request_link(github_pr_id)})"
           end
@@ -97,19 +99,13 @@ module Slackistrano
       end
 
       def parse_merge_commit(commit)
-        if res = commit.match(/Merge pull request #(\d+) from \S+ (?:\[(#?\w+)\])*\s?(.+)/)
-          res.captures
-        else
-          [nil, [], nil]
-        end
+        res = commit.match(/Merge pull request #(\d+) from \S+ (?:\[(#?\w+)\])*\s?(.+)/)
+        res.captures if res
       end
 
       def parse_squash_and_merge_commit(commit)
-        if res = commit.match(/\[([#\d,\s]*)\]\s*(.+)\(#(\d+)\)/)
-          res.captures
-        else
-          ['', nil, nil]
-        end
+        res = commit.match(/\[([#\d,\s]*)\]\s*(.+)\(#(\d+)\)/)
+        res.captures if res
       end
 
       def target_process_entity_link(entity_id, name)

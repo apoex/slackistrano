@@ -81,6 +81,14 @@ describe Slackistrano::Messaging::Apoex do
       it 'Ignores the story' do
         expect(subject.stories).to be_empty
       end
+
+      context 'when merge commit' do
+        let(:story_commit) { "Merge pull request #1815 from apoex/revert-1794-10934-full-package-item-count Revert \"[#10934] Default the number of picking full package items to 1\"" }
+
+        it 'Ignores the story' do
+          expect(subject.stories).to be_empty
+        end
+      end
     end
   end
 end
