@@ -74,7 +74,7 @@ describe Slackistrano::Messaging::Apoex do
         expect($stdout).to receive(:puts).with(/Slackistrano: Error finding pull requests:/)
         expect($stdout).to receive(:puts).with(/boom/)
         expect($stdout).to receive(:puts).with(/apoex_spec.rb:/)
-        expect(subject.pull_requests).to be_empty
+        expect(subject.pull_requests).to eq('Error finding pull requests')
       end
     end
   end
@@ -117,7 +117,7 @@ describe Slackistrano::Messaging::Apoex do
         expect($stdout).to receive(:puts).with(/Slackistrano: Error finding stories:/)
         expect($stdout).to receive(:puts).with(/boom/)
         expect($stdout).to receive(:puts).with(/apoex_spec.rb:/)
-        expect(subject.stories).to be_empty
+        expect(subject.stories).to eq('Error finding stories')
       end
     end
   end

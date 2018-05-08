@@ -76,7 +76,7 @@ module Slackistrano
         warning 'Slackistrano: Error finding pull requests:'
         warning e.message
         warning e.backtrace.join("\n")
-        ''
+        'Error finding pull requests'
       end
 
       def stories
@@ -94,7 +94,7 @@ module Slackistrano
         warning 'Slackistrano: Error finding stories:'
         warning e.message
         warning e.backtrace.join("\n")
-        ''
+        'Error finding stories'
       end
 
       def story_commits
