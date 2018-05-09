@@ -1,5 +1,10 @@
 # Slackistrano Change Log
 
+3.8.2.1
+-------
+
+- Handle commit parsing errors gracefully
+
 3.8.2
 -----
 
