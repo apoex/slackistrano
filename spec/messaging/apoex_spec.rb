@@ -62,15 +62,63 @@ describe Slackistrano::Messaging::Apoex do
     it 'returns the pull requests' do
       expect(subject.pull_requests).to eq("This is a merge commit <https://github.com/apoex/test/pull/447|Github :octocat:>")
     end
+
+    context 'when parser breaks' do
+      let(:error) { StandardError.new 'boom' }
+
+      before do
+        allow(subject).to receive(:parse_merge_commit).and_raise(error)
+      end
+
+      it 'renders error message' do
+        expect($stdout).to receive(:puts).with(/Slackistrano: Error finding pull requests:/)
+        expect($stdout).to receive(:puts).with(/boom/)
+        expect($stdout).to receive(:puts).with(/apoex_spec.rb:/)
+        expect(subject.pull_requests).to eq('Error finding pull requests')
+      end
+    end
   end
 
   describe '#stories' do
+    let(:story_commit) { squash_merge_commit }
+
     before do
-      expect(subject).to receive(:story_commits).and_return([squash_merge_commit])
+      expect(subject).to receive(:story_commits).and_return([story_commit])
     end
 
     it 'returns the stories' do
       expect(subject.stories).to eq("<https://apoexab.tpondemand.com/entity/1337|#1337 - The best feature ever > (<https://github.com/apoex/test/pull/12|Github :octocat:>)")
+    end
+
+    context 'when story commit is reverted' do
+      let(:story_commit) { "  Revert \"[#12345] Bad code\"" }
+
+      it 'Ignores the story' do
+        expect(subject.stories).to be_empty
+      end
+
+      context 'when merge commit' do
+        let(:story_commit) { "Merge pull request #1815 from apoex/revert-1794-10934-full-package-item-count Revert \"[#10934] Default the number of picking full package items to 1\"" }
+
+        it 'Ignores the story' do
+          expect(subject.stories).to be_empty
+        end
+      end
+    end
+
+    context 'when parser breaks' do
+      let(:error) { StandardError.new 'boom' }
+
+      before do
+        allow(subject).to receive(:parse_merge_commit).and_raise(error)
+      end
+
+      it 'renders error message' do
+        expect($stdout).to receive(:puts).with(/Slackistrano: Error finding stories:/)
+        expect($stdout).to receive(:puts).with(/boom/)
+        expect($stdout).to receive(:puts).with(/apoex_spec.rb:/)
+        expect(subject.stories).to eq('Error finding stories')
+      end
     end
   end
 end

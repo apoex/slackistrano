@@ -1,6 +1,7 @@
 module Slackistrano
   module Messaging
     class Apoex < Base
+      include Capistrano::Doctor::OutputHelpers
 
       def payload_for_updating
         super
@@ -71,6 +72,11 @@ module Slackistrano
 
           "#{name} #{github_pull_request_link(github_pr_id)}"
         end.join("\n")
+      rescue StandardError => e
+        warning 'Slackistrano: Error finding pull requests:'
+        warning e.message
+        warning e.backtrace.join("\n")
+        'Error finding pull requests'
       end
 
       def stories
@@ -78,10 +84,17 @@ module Slackistrano
           github_pr_id, tps, name = parse_merge_commit(commit)
           tps, name, github_pr_id = parse_squash_and_merge_commit(commit) unless github_pr_id
 
+          next unless tps
+
           tps.split(',').map do |tp|
             "#{target_process_entity_link(tp, name)} (#{github_pull_request_link(github_pr_id)})"
           end
         end.join("\n")
+      rescue StandardError => e
+        warning 'Slackistrano: Error finding stories:'
+        warning e.message
+        warning e.backtrace.join("\n")
+        'Error finding stories'
       end
 
       def story_commits
@@ -97,19 +110,13 @@ module Slackistrano
       end
 
       def parse_merge_commit(commit)
-        if res = commit.match(/Merge pull request #(\d+) from \S+ (?:\[(#?\w+)\])*\s?(.+)/)
-          res.captures
-        else
-          [nil, [], nil]
-        end
+        res = commit.match(/Merge pull request #(\d+) from \S+ (?:\[(#?\w+)\])*\s?(.+)/)
+        res.captures if res
       end
 
       def parse_squash_and_merge_commit(commit)
-        if res = commit.match(/\[([#\d,\s]*)\]\s*(.+)\(#(\d+)\)/)
-          res.captures
-        else
-          [[], nil, nil]
-        end
+        res = commit.match(/\[([#\d,\s]*)\]\s*(.+)\(#(\d+)\)/)
+        res.captures if res
       end
 
       def target_process_entity_link(entity_id, name)
